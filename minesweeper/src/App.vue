@@ -7,7 +7,6 @@
 
 <template>
     <Header @changeDifficulty="(difficulty) => diff = difficulty"/>
-    {{ diff }} 
     <Board v-if="diff != ''" :level='diff' />
 </template>
 
