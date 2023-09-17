@@ -3,7 +3,7 @@
         <div :id="level" class="board">
             <template v-for="row in minesweeperBoard">
                 <template v-for="tile in row">
-                    <button @click="dig(tile)" @click.middle="flag(tile)">{{ display(tile) }}</button>
+                    <button :disabled="tile.isDisabled" @click="dig(tile.x, tile.y)" @click.middle="flag(tile)">{{ display(tile) }}</button>
                 </template>
             </template>
         </div>
@@ -23,7 +23,7 @@
             bombChance = 20;
             break;
         case 'medium':
-            maxSize = 20;
+            maxSize = 15;
             bombChance = 30;
             break;
         case 'hard':
@@ -37,8 +37,8 @@
         var board = reactive([]);
         for (var i = 0; i < maxSize; i++){
             board.push([])
-            for (var j = 1; j <= maxSize; j++){
-                var initializedTile = {nearbyBombs: 0, isFlagged: false, isRevealed: false, isBomb: false};
+            for (var j = 0; j < maxSize; j++){
+                var initializedTile = {nearbyBombs: 0, isFlagged: false, isRevealed: false, isBomb: false, y: j, x: i, isDisabled: false};
                 board[i].push(initializedTile);
             }
         }
@@ -88,7 +88,7 @@
         }
 
         // Check Below to the right
-        var inOrOut = checkIfTileIn(i + 1, j + 12);
+        var inOrOut = checkIfTileIn(i + 1, j + 1);
         if (inOrOut == true){
             if (minesweeperBoard[i + 1][j + 1].isBomb == true){
                 minesweeperBoard[i][j].nearbyBombs++;
@@ -144,12 +144,42 @@
         }
     }
 
-    function dig(tile){
-        if (tile.isFlagged == true){
-            tile.isFlagged = false;
+    function dig(x, y){
+        console.log(x)
+        console.log(y)
+        console.log(minesweeperBoard)
+        var square = minesweeperBoard[x][y];
+        if (x < 0 || y < 0){
             return;
         }
-        tile.isRevealed = true;
+        if (x > maxSize || y > maxSize){
+            return;
+        }
+        if (square.isRevealed == true){
+            return;
+        }
+        if (square.isFlagged == true){
+            square.isFlagged = false;
+            return;
+        }
+        if (square.isBomb){
+            console.log("BOOM");
+            return;
+        }
+        if (square.isBomb == false){
+            square.isRevealed = true;
+            square.isDisabled = true;
+        }
+        if (square.nearbyBombs == 0){
+            dig(minesweeperBoard[x - 1][y - 1]);
+            dig(minesweeperBoard[x][y - 1]);
+            dig(minesweeperBoard[x + 1][y - 1]);
+            dig(minesweeperBoard[x - 1][y]);
+            dig(minesweeperBoard[x + 1][y]);
+            dig(minesweeperBoard[x - 1][y + 1]);
+            dig(minesweeperBoard[x][y + 1]);
+            dig(minesweeperBoard[x + 1][y + 1]);
+        }
     }
 
     function flag(tile){
@@ -168,7 +198,7 @@
     var minesweeperBoard = initBoard();
     placeBombs();
     findBombs();
-    console.log(minesweeperBoard)
+    
 </script>
 
 <style scoped>
@@ -191,7 +221,7 @@
     }
 
     #medium{
-        width:1000px;
+        width:750px;
     }
 
     #hard{
