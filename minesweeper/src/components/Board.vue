@@ -15,18 +15,18 @@
     import Modal from './Modal.vue'
     import { reactive } from 'vue';
     const props = defineProps(['level'])
-    var maxSize = 0, bombChance = 0, displayModal = false, blurPage = 'noBlur';
+    var maxSize = 0, bombChance = 0, displayModal = false, blurPage = 'noBlur', count = 0;
     
     
     // change size of grid and chance for a bomb to spawn
     switch (props.level){
         case 'easy':
             maxSize = 10;
-            bombChance = 20;
+            bombChance = 10;
             break;
         case 'medium':
             maxSize = 15;
-            bombChance = 30;
+            bombChance = 50;
             break;
         case 'hard':
             maxSize = 25;
@@ -54,10 +54,15 @@
     }
     
     // Go through each tile, call helper function to decide if it will be a bomb
-    function placeBombs(){
+    function placeBombs(x, y){
         for (var i = 0; i < maxSize; i++){
             for (var j = 0; j < maxSize; j++){
-                minesweeperBoard[i][j].isBomb = decideIfBomb();
+                if (x == i && y == j){
+                    minesweeperBoard[i][j].isBomb == false;
+                }
+                else{
+                    minesweeperBoard[i][j].isBomb = decideIfBomb();
+                }
             }
         }
     }
@@ -147,6 +152,11 @@
     }
 
     function dig(x, y){
+        if (count == 0){
+            count++;
+            placeBombs(x, y);
+            findBombs();
+        }
         if (x < 0 || y < 0){
             return;
         }
@@ -201,8 +211,7 @@
     }
 
     var minesweeperBoard = initBoard();
-    placeBombs();
-    findBombs();
+    console.log(minesweeperBoard);
     
 </script>
 
