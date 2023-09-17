@@ -1,9 +1,10 @@
 <template>
-    <div id="container">
+    <Modal id="modal" v-show="displayModal"/>
+    <div :class="blurPage" id="container">
         <div :id="level" class="board">
             <template v-for="row in minesweeperBoard">
                 <template v-for="tile in row">
-                    <button :disabled="tile.isDisabled" @click="dig(tile.x, tile.y)" @click.middle="flag(tile)">{{ display(tile) }}</button>
+                    <button :class="tile.cssStyle" :disabled="tile.isDisabled" @click="dig(tile.x, tile.y)" @click.middle="flag(tile)">{{ display(tile) }}</button>
                 </template>
             </template>
         </div>
@@ -11,9 +12,10 @@
 </template> 
 
 <script setup>
+    import Modal from './Modal.vue'
     import { reactive } from 'vue';
     const props = defineProps(['level'])
-    var maxSize = 0, bombChance = 0;
+    var maxSize = 0, bombChance = 0, displayModal = false, blurPage = 'noBlur';
     
     
     // change size of grid and chance for a bomb to spawn
@@ -27,7 +29,7 @@
             bombChance = 30;
             break;
         case 'hard':
-            maxSize = 30;
+            maxSize = 25;
             bombChance = 40;
             break;
     }
@@ -38,7 +40,7 @@
         for (var i = 0; i < maxSize; i++){
             board.push([])
             for (var j = 0; j < maxSize; j++){
-                var initializedTile = {nearbyBombs: 0, isFlagged: false, isRevealed: false, isBomb: false, y: j, x: i, isDisabled: false};
+                var initializedTile = {nearbyBombs: 0, isFlagged: false, isRevealed: false, isBomb: false, y: j, x: i, isDisabled: false, cssStyle: 'notShown'};
                 board[i].push(initializedTile);
             }
         }
@@ -145,16 +147,13 @@
     }
 
     function dig(x, y){
-        console.log(x)
-        console.log(y)
-        console.log(minesweeperBoard)
-        var square = minesweeperBoard[x][y];
         if (x < 0 || y < 0){
             return;
         }
-        if (x > maxSize || y > maxSize){
+        if (x > maxSize -1 || y > maxSize - 1){
             return;
         }
+        var square = minesweeperBoard[x][y];
         if (square.isRevealed == true){
             return;
         }
@@ -163,22 +162,25 @@
             return;
         }
         if (square.isBomb){
-            console.log("BOOM");
+            square.cssStyle = 'explode';
+            displayModal = true;
+            blurPage = 'blur';
             return;
         }
         if (square.isBomb == false){
+            square.cssStyle = 'safe';
             square.isRevealed = true;
             square.isDisabled = true;
         }
         if (square.nearbyBombs == 0){
-            dig(minesweeperBoard[x - 1][y - 1]);
-            dig(minesweeperBoard[x][y - 1]);
-            dig(minesweeperBoard[x + 1][y - 1]);
-            dig(minesweeperBoard[x - 1][y]);
-            dig(minesweeperBoard[x + 1][y]);
-            dig(minesweeperBoard[x - 1][y + 1]);
-            dig(minesweeperBoard[x][y + 1]);
-            dig(minesweeperBoard[x + 1][y + 1]);
+            dig(x - 1, y - 1);
+            dig(x, y - 1);
+            dig(x + 1, y - 1);
+            dig(x - 1, y);
+            dig(x + 1, y);
+            dig(x - 1, y + 1);
+            dig(x, y + 1);
+            dig(x + 1, y + 1);
         }
     }
 
@@ -188,7 +190,10 @@
 
     function display(tile){
         if (tile.isFlagged == true)
-            return "FLAG"
+        return "FLAG"
+        if (tile.nearbyBombs == 0 && tile.isRevealed == true){
+            return "-";
+        }
         else if (tile.isRevealed == true)
             return tile.nearbyBombs;
         else
@@ -203,7 +208,17 @@
 
 <style scoped>
 
+    .safe{
+        background-color:lightgreen;
+    }
+
+    .explode{
+        background-color: red;
+    }
+
     button{
+        color:black;
+        font-weight: bold;
         width:50px;
         height:50px;
     }
@@ -225,6 +240,22 @@
     }
 
     #hard{
-        width:1500px;
+        width:1250px;
+    }
+
+    #modal{
+        margin-top:250px;
+        margin-left:350px;
+        position:fixed;
+        display:block;
+        z-index:2;
+    }
+
+    .blur{
+        -webkit-filter: blur(5px);
+        -moz-filter: blur(5px);
+        -o-filter: blur(5px);
+        -ms-filter: blur(5px);
+        filter: blur(5px);
     }
 </style>
