@@ -1,5 +1,5 @@
 <template>
-    <Modal :outcome="winOrLose" id="modal" v-show="displayModal"/>
+    <Modal :outcome="winLose" id="modal" v-show="displayModal"/>
     <div :class="blurPage" id="container">
         <div :id="level" class="board">
             <template v-for="row in minesweeperBoard">
@@ -15,9 +15,10 @@
 
 <script setup>
     import Modal from './Modal.vue'
-    import { reactive } from 'vue';
+    import { reactive, ref } from 'vue';
     const props = defineProps(['level'])
-    var maxSize = 0, bombChance = 0, displayModal = false, blurPage = 'noBlur', count = 0, flagCount = 0, bombCount = 0, winOrLose = null;
+    var winLose = ref('');
+    var maxSize = 0, bombChance = 0, displayModal = false, blurPage = 'noBlur', count = 0, flagCount = 0, bombCount = 0;
     
     
     // change size of grid and chance for a bomb to spawn
@@ -157,6 +158,7 @@
     }
 
     function dig(x, y){
+        // on first dig, place bombs, first tile will never be a bomb
         if (count == 0){
             count++;
             placeBombs(x, y);
@@ -178,10 +180,10 @@
             return;
         }
         if (square.isBomb){
+            winLose = 'lose';
             square.cssStyle = 'explode';
             displayModal = true;
             blurPage = 'blur';
-            winOrLose = 'lose';
             return;
         }
         if (square.isBomb == false){
@@ -203,7 +205,27 @@
 
     function flag(tile){
         tile.isFlagged = true;
-        flagCount++;
+        if (checkWinCon()){
+            winLose = 'win';
+            displayModal = true;
+            blurPage = 'blur';
+            return;
+        }
+    }
+
+    function checkWinCon(){
+        // Check if all flagged tiles are also bombs
+        for (var i = 0; i < maxSize; i++){
+            for (var j = 0; j < maxSize; j++){
+                if (minesweeperBoard[i][j].isBomb && minesweeperBoard[i][j].isFlagged){
+                    flagCount++;
+                }
+            }
+        }
+        if (flagCount == bombCount){
+            return true;
+        }
+        return false;
     }
 
     function display(tile){
@@ -219,12 +241,16 @@
     }
 
     var minesweeperBoard = initBoard();
-    console.log(minesweeperBoard);
-    while (true){
-        if (bombCount - flagCount == 0){
-            winOrLose = 'win'
-        }
-    }
+    // if (count != 0){
+    //     while (true){
+    //         if (bombCount - flagCount == 0){
+    //             winLose = 'win';
+    //             displayModal = true;
+    //             blurPage = 'blur';
+    //             break;
+    //         }
+    //     }
+    // }
 </script>
 
 <style scoped>
@@ -265,11 +291,14 @@
     }
 
     #modal{
-        margin-top:250px;
-        margin-left:350px;
+        margin-top:300px;
+        left: 0;
+        right: 0;
         position:fixed;
         display:block;
         z-index:2;
+        margin-left: 0 auto;
+        margin-right: 0 auto;
     }
 
     .blur{
