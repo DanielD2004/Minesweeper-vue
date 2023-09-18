@@ -1,5 +1,5 @@
 <template>
-    <Modal id="modal" v-show="displayModal"/>
+    <Modal :outcome="winOrLose" id="modal" v-show="displayModal"/>
     <div :class="blurPage" id="container">
         <div :id="level" class="board">
             <template v-for="row in minesweeperBoard">
@@ -9,13 +9,15 @@
             </template>
         </div>
     </div>
+    <h2>{{ bombCount }}</h2>
+    <h2>{{ bombCount - flagCount }}</h2>
 </template> 
 
 <script setup>
     import Modal from './Modal.vue'
     import { reactive } from 'vue';
     const props = defineProps(['level'])
-    var maxSize = 0, bombChance = 0, displayModal = false, blurPage = 'noBlur', count = 0;
+    var maxSize = 0, bombChance = 0, displayModal = false, blurPage = 'noBlur', count = 0, flagCount = 0, bombCount = 0, winOrLose = null;
     
     
     // change size of grid and chance for a bomb to spawn
@@ -62,6 +64,9 @@
                 }
                 else{
                     minesweeperBoard[i][j].isBomb = decideIfBomb();
+                    if (minesweeperBoard[i][j].isBomb){
+                        bombCount++;
+                    }
                 }
             }
         }
@@ -169,12 +174,14 @@
         }
         if (square.isFlagged == true){
             square.isFlagged = false;
+            flagCount--;
             return;
         }
         if (square.isBomb){
             square.cssStyle = 'explode';
             displayModal = true;
             blurPage = 'blur';
+            winOrLose = 'lose';
             return;
         }
         if (square.isBomb == false){
@@ -196,6 +203,7 @@
 
     function flag(tile){
         tile.isFlagged = true;
+        flagCount++;
     }
 
     function display(tile){
@@ -212,7 +220,11 @@
 
     var minesweeperBoard = initBoard();
     console.log(minesweeperBoard);
-    
+    while (true){
+        if (bombCount - flagCount == 0){
+            winOrLose = 'win'
+        }
+    }
 </script>
 
 <style scoped>
