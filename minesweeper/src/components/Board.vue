@@ -205,7 +205,7 @@
 
     function flag(tile){
         tile.isFlagged = true;
-        if (checkWinCon()){
+        if (checkWinCon(tile)){
             winLose = 'win';
             displayModal = true;
             blurPage = 'blur';
@@ -213,14 +213,10 @@
         }
     }
 
-    function checkWinCon(){
+    function checkWinCon(tile){
         // Check if all flagged tiles are also bombs
-        for (var i = 0; i < maxSize; i++){
-            for (var j = 0; j < maxSize; j++){
-                if (minesweeperBoard[i][j].isBomb && minesweeperBoard[i][j].isFlagged){
-                    flagCount++;
-                }
-            }
+        if (tile.isBomb && tile.isFlagged){
+            flagCount++;
         }
         if (flagCount == bombCount){
             return true;
