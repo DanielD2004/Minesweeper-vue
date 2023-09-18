@@ -175,6 +175,7 @@
         // Already flagged, remove flag
         if (square.isFlagged == true){
             square.isFlagged = false;
+            square.cssStyle = "notshown"
             flagCount--;
             return;
         }
