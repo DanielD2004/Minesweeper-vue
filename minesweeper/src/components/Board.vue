@@ -9,8 +9,6 @@
             </template>
         </div>
     </div>
-    <h2>{{ bombCount }}</h2>
-    <h2>{{ bombCount - flagCount }}</h2>
 </template> 
 
 <script setup>

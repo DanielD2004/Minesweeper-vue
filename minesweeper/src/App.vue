@@ -6,10 +6,9 @@
 </script>
 
 <template>
-    <Header @changeDifficulty="(difficulty) => diff = difficulty"/>
-    <Board v-if="diff != ''" :level='diff' />
+        <Header @changeDifficulty="(difficulty) => diff = difficulty"/>
+        <Board v-if="diff != ''" :level='diff' />
 </template>
 
 <style scoped>
-
 </style>
