@@ -27,7 +27,7 @@
             break;
         case 'medium':
             maxSize = 15;
-            bombChance = 50;
+            bombChance = 20;
             break;
         case 'hard':
             maxSize = 25;
@@ -172,12 +172,15 @@
         if (square.isRevealed == true){
             return;
         }
+        // Already flagged, remove flag
         if (square.isFlagged == true){
             square.isFlagged = false;
             flagCount--;
             return;
         }
+        // Lose
         if (square.isBomb){
+            disableButtons();
             winLose = 'lose';
             square.cssStyle = 'explode';
             displayModal = true;
@@ -202,12 +205,27 @@
     }
 
     function flag(tile){
+        // Can't flag as first move, which would be considered a win
+        if (count == 0){
+            return;
+        }
         tile.isFlagged = true;
+        tile.cssStyle = "flagged"
+        // Check if won everytime a tile is flagged
         if (checkWinCon(tile)){
+            disableButtons();
             winLose = 'win';
             displayModal = true;
             blurPage = 'blur';
             return;
+        }
+    }
+
+    function disableButtons(){
+        for (var i = 0; i < maxSize; i++){
+            for (var j = 0; j < maxSize; j++){
+                minesweeperBoard[i][j].isDisabled = true;
+            }
         }
     }
 
@@ -235,20 +253,13 @@
     }
 
     var minesweeperBoard = initBoard();
-    // if (count != 0){
-    //     while (true){
-    //         if (bombCount - flagCount == 0){
-    //             winLose = 'win';
-    //             displayModal = true;
-    //             blurPage = 'blur';
-    //             break;
-    //         }
-    //     }
-    // }
 </script>
 
 <style scoped>
 
+    .flagged {
+        background-color: aqua;
+    }
     .safe{
         background-color:lightgreen;
     }
@@ -285,7 +296,6 @@
     }
 
     #modal{
-        margin-top:300px;
         left: 0;
         right: 0;
         position:fixed;
