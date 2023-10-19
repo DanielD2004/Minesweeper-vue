@@ -1,8 +1,8 @@
 <template>
     <div id="header-wrapper">
         <div id="difficulty">
-            <button @click="$emit('changeDifficulty', 'easy')" id="easy">Easy</button>
-            <button @click="$emit('changeDifficulty', 'medium')" id="medium">Medium</button>
+            <button @click="$emit('changeDifficulty', 'easy')" id="easy">EASY</button>
+            <button @click="$emit('changeDifficulty', 'medium')" id="medium">MEDIUM</button>
             <!-- <button @click="$emit('changeDifficulty', 'hard')" id="hard">Hard</button>   -->
         </div>
 
