@@ -1,8 +1,8 @@
 <template>
     <div id="header-wrapper">
         <div id="difficulty">
-            <button @click="$emit('changeDifficulty', 'easy')" id="easy">EASY</button>
-            <button @click="$emit('changeDifficulty', 'medium')" id="medium">MEDIUM</button>
+            <button :disabled='isDisabled' @click="$emit('changeDifficulty', 'easy'); disableButton();" id="easy">EASY</button>
+            <button :disabled='isDisabled' @click="$emit('changeDifficulty', 'medium'); disableButton();" id="medium">MEDIUM</button>
             <!-- <button @click="$emit('changeDifficulty', 'hard')" id="hard">Hard</button>   -->
         </div>
 
@@ -18,7 +18,13 @@
 </template>
 
 <script setup>
+    import { ref } from 'vue';
 
+    const isDisabled = ref(false);
+
+    function disableButton(){
+        isDisabled.value = true;
+    }
 </script>
 
 <style scoped>

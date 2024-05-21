@@ -1,7 +1,7 @@
 <template>
     <Modal :outcome="winLose" id="modal" v-show="displayModal"/>
     <div :class="blurPage" id="container">
-        <div :id="level" class="board">
+        <div :id="props.level" class="board">
             <template v-for="row in minesweeperBoard">
                 <template v-for="tile in row">
                     <button :class="tile.cssStyle" :disabled="tile.isDisabled" @click="dig(tile.x, tile.y)" @click.middle="flag(tile)">{{ display(tile) }}</button>
