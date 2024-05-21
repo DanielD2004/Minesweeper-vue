@@ -11,7 +11,6 @@
 
 <script setup>
     const props = defineProps(['outcome'])
-    console.log(props.outcome)
 </script>
 
 <style scoped>

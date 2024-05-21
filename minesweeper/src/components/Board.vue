@@ -12,6 +12,7 @@
 </template> 
 
 <script setup>
+    //is it better to have modal in board, or emit win/lose to app, and have modal in app
     import Modal from './Modal.vue'
     import { reactive, ref } from 'vue';
     const props = defineProps(['level'])
@@ -22,11 +23,11 @@
     // change size of grid and chance for a bomb to spawn
     switch (props.level){
         case 'easy':
-            maxSize = 10;
+            maxSize = 8;
             bombChance = 10;
             break;
         case 'medium':
-            maxSize = 15;
+            maxSize = 12;
             bombChance = 20;
             break;
         case 'hard':
@@ -69,6 +70,7 @@
                 }
             }
         }
+    findBombs();
     }
 
     function checkIfTileIn(i, j){
@@ -90,65 +92,66 @@
     }
 
     function scanAroundTile(i, j){
+        var tileInOrOut
         // Check Below
-        var inOrOut = checkIfTileIn(i + 1, j);
-        if (inOrOut == true){
+         tileInOrOut = checkIfTileIn(i + 1, j);
+        if (tileInOrOut == true){
             if (minesweeperBoard[i + 1][j].isBomb == true){
                 minesweeperBoard[i][j].nearbyBombs++;
             }
         }
 
         // Check Below to the right
-        var inOrOut = checkIfTileIn(i + 1, j + 1);
-        if (inOrOut == true){
+         tileInOrOut = checkIfTileIn(i + 1, j + 1);
+        if (tileInOrOut == true){
             if (minesweeperBoard[i + 1][j + 1].isBomb == true){
                 minesweeperBoard[i][j].nearbyBombs++;
             }
         }
 
         // Check Below to the left
-        var inOrOut = checkIfTileIn(i + 1, j - 1);
-        if (inOrOut == true){
+         tileInOrOut = checkIfTileIn(i + 1, j - 1);
+        if (tileInOrOut == true){
             if (minesweeperBoard[i + 1][j - 1].isBomb == true){
                 minesweeperBoard[i][j].nearbyBombs++;
             }
         }
 
         // Check Right
-        var inOrOut = checkIfTileIn(i, j + 1);
-        if (inOrOut == true){
+         tileInOrOut = checkIfTileIn(i, j + 1);
+        if (tileInOrOut == true){
             if (minesweeperBoard[i][j + 1].isBomb == true){
                 minesweeperBoard[i][j].nearbyBombs++;
             }
         }
 
         // Check Above to the right
-        var inOrOut = checkIfTileIn(i - 1, j + 1);
-        if (inOrOut == true){
+         tileInOrOut = checkIfTileIn(i - 1, j + 1);
+        if (tileInOrOut == true){
             if (minesweeperBoard[i - 1][j + 1].isBomb == true){
                 minesweeperBoard[i][j].nearbyBombs++;
             }
         }
 
         // Check Above
-        var inOrOut = checkIfTileIn(i - 1, j);
-        if (inOrOut == true){
+         tileInOrOut = checkIfTileIn(i - 1, j);
+        if (tileInOrOut == true){
             if (minesweeperBoard[i - 1][j].isBomb == true){
                 minesweeperBoard[i][j].nearbyBombs++;
             }
         }
 
         // Check Above to the left
-        var inOrOut = checkIfTileIn(i - 1, j - 1);
-        if (inOrOut == true){
+         tileInOrOut = checkIfTileIn(i - 1, j - 1);
+        if (tileInOrOut == true){
             if (minesweeperBoard[i - 1][j - 1].isBomb == true){
                 minesweeperBoard[i][j].nearbyBombs++;
             }
         }
 
         // Check Left
-        var inOrOut = checkIfTileIn(i, j - 1);
-        if (inOrOut == true){
+         tileInOrOut = checkIfTileIn(i, j - 1);
+        if (tileInOrOut == true){
             if (minesweeperBoard[i][j - 1].isBomb == true){
                 minesweeperBoard[i][j].nearbyBombs++;
             }
@@ -160,12 +163,11 @@
         if (count == 0){
             count++;
             placeBombs(x, y);
-            findBombs();
         }
         if (x < 0 || y < 0){
             return;
         }
-        if (x > maxSize -1 || y > maxSize - 1){
+        if (x > maxSize - 1 || y > maxSize - 1){
             return;
         }
         var square = minesweeperBoard[x][y];
@@ -285,11 +287,11 @@
     }
 
     #easy{
-        width:500px;
+        width:400px;
     }
 
     #medium{
-        width:750px;
+        width:600px;
     }
 
     #hard{
