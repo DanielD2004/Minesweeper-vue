@@ -28,7 +28,7 @@
             break;
         case 'medium':
             maxSize = 12;
-            bombChance = 20;
+            bombChance = 15;
             break;
         case 'hard':
             maxSize = 25;
@@ -46,6 +46,7 @@
                 board[i].push(initializedTile);
             }
         }
+        console.log("yo")
         return board;
     }
 
