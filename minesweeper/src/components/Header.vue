@@ -14,7 +14,7 @@
                 <button id="github">github</button>
             </a>
         </div>
-    </div>
+    </div> 
 </template>
 
 <script setup>

@@ -7,7 +7,7 @@
 
 <template>
         <Header @changeDifficulty="(difficulty) => diff = difficulty"/>
-        <Board v-if="diff != ''" :level='diff' />
+        <Board v-if="diff" :level='diff' />
 </template>
 
 <style scoped>

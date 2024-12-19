@@ -46,31 +46,29 @@
                 board[i].push(initializedTile);
             }
         }
-        console.log("yo")
         return board;
     }
 
     // Using bombChance set by difficulty, randomly return true or false, indicating if tile will be a bomb
     function decideIfBomb(){
         var rando = Math.floor(Math.random() * 101);
-        return rando <= bombChance ? true : false;
+        return rando <= bombChance;
     }
     
     // Go through each tile, call helper function to decide if it will be a bomb
     function placeBombs(x, y){
         for (var i = 0; i < maxSize; i++){
             for (var j = 0; j < maxSize; j++){
-                if (x == i && y == j){
-                    minesweeperBoard[i][j].isBomb == false;
-                }
-                else{
+                    if (i === x && j === y) {
+                        minesweeperBoard[i][j].isBomb = false; 
+                        continue;
+                    }
                     minesweeperBoard[i][j].isBomb = decideIfBomb();
                     if (minesweeperBoard[i][j].isBomb){
                         bombCount++;
                     }
                 }
             }
-        }
     findBombs();
     }
 
@@ -95,57 +93,57 @@
     function scanAroundTile(i, j){
         var tileInOrOut
         // Check Below
-         tileInOrOut = checkIfTileIn(i + 1, j);
-        if (tileInOrOut == true){
-            if (minesweeperBoard[i + 1][j].isBomb == true){
+        tileInOrOut = checkIfTileIn(i + 1, j);
+        if (tileInOrOut){
+            if (minesweeperBoard[i + 1][j].isBomb){
                 minesweeperBoard[i][j].nearbyBombs++;
             }
         }
 
         // Check Below to the right
          tileInOrOut = checkIfTileIn(i + 1, j + 1);
-        if (tileInOrOut == true){
-            if (minesweeperBoard[i + 1][j + 1].isBomb == true){
+        if (tileInOrOut){
+            if (minesweeperBoard[i + 1][j + 1].isBomb){
                 minesweeperBoard[i][j].nearbyBombs++;
             }
         }
 
         // Check Below to the left
          tileInOrOut = checkIfTileIn(i + 1, j - 1);
-        if (tileInOrOut == true){
-            if (minesweeperBoard[i + 1][j - 1].isBomb == true){
+        if (tileInOrOut){
+            if (minesweeperBoard[i + 1][j - 1].isBomb){
                 minesweeperBoard[i][j].nearbyBombs++;
             }
         }
 
         // Check Right
          tileInOrOut = checkIfTileIn(i, j + 1);
-        if (tileInOrOut == true){
-            if (minesweeperBoard[i][j + 1].isBomb == true){
+        if (tileInOrOut){
+            if (minesweeperBoard[i][j + 1].isBomb){
                 minesweeperBoard[i][j].nearbyBombs++;
             }
         }
 
         // Check Above to the right
          tileInOrOut = checkIfTileIn(i - 1, j + 1);
-        if (tileInOrOut == true){
-            if (minesweeperBoard[i - 1][j + 1].isBomb == true){
+        if (tileInOrOut){
+            if (minesweeperBoard[i - 1][j + 1].isBomb){
                 minesweeperBoard[i][j].nearbyBombs++;
             }
         }
 
         // Check Above
          tileInOrOut = checkIfTileIn(i - 1, j);
-        if (tileInOrOut == true){
-            if (minesweeperBoard[i - 1][j].isBomb == true){
+        if (tileInOrOut){
+            if (minesweeperBoard[i - 1][j].isBomb){
                 minesweeperBoard[i][j].nearbyBombs++;
             }
         }
 
         // Check Above to the left
          tileInOrOut = checkIfTileIn(i - 1, j - 1);
-        if (tileInOrOut == true){
-            if (minesweeperBoard[i - 1][j - 1].isBomb == true){
+        if (tileInOrOut){
+            if (minesweeperBoard[i - 1][j - 1].isBomb){
                 minesweeperBoard[i][j].nearbyBombs++;
             }
         }
@@ -160,26 +158,21 @@
     }
 
     function dig(x, y){
-        // on first dig, place bombs, first tile will never be a bomb
+        // on first dig only, place bombs, first tile will never be a bomb
         if (count == 0){
             count++;
             placeBombs(x, y);
         }
-        if (x < 0 || y < 0){
+        
+        if (!checkIfTileIn(x, y)){
             return;
         }
-        if (x > maxSize - 1 || y > maxSize - 1){
-            return;
-        }
+
         var square = minesweeperBoard[x][y];
         if (square.isRevealed == true){
             return;
         }
-        // Already flagged, remove flag
         if (square.isFlagged == true){
-            square.isFlagged = false;
-            square.cssStyle = "notshown"
-            flagCount--;
             return;
         }
         // Lose
@@ -197,14 +190,10 @@
             square.isDisabled = true;
         }
         if (square.nearbyBombs == 0){
-            dig(x - 1, y - 1);
             dig(x, y - 1);
-            dig(x + 1, y - 1);
             dig(x - 1, y);
             dig(x + 1, y);
-            dig(x - 1, y + 1);
             dig(x, y + 1);
-            dig(x + 1, y + 1);
         }
     }
 
@@ -213,15 +202,25 @@
         if (count == 0){
             return;
         }
-        tile.isFlagged = true;
-        tile.cssStyle = "flagged"
-        // Check if won everytime a tile is flagged
-        if (checkWinCon(tile)){
-            disableButtons();
-            winLose = 'win';
-            displayModal = true;
-            blurPage = 'blur';
+        
+        // Already flagged, remove flag
+        if (tile.isFlagged == true){
+            tile.isFlagged = false;
+            tile.cssStyle = "notshown"
+            flagCount--;
             return;
+        }
+        else{
+            tile.isFlagged = true;
+            tile.cssStyle = "flagged"
+            // Check if won everytime a tile is flagged
+            if (checkWinCon(tile)){
+                disableButtons();
+                winLose = 'win';
+                displayModal = true;
+                blurPage = 'blur';
+                return;
+            }
         }
     }
 
