@@ -17,7 +17,7 @@
     import { reactive, ref } from 'vue';
     const props = defineProps(['level'])
     var winLose = ref('');
-    var maxSize = 0, bombChance = 0, displayModal = false, blurPage = 'noBlur', count = 0, flagCount = 0, bombCount = 0;
+    var maxSize = 0, bombChance = 0, displayModal = false, blurPage = 'noBlur', count = 0, flagCount = 0, bombCount = 0, flaggedBombsCount = 0;
     
     
     // change size of grid and chance for a bomb to spawn
@@ -194,6 +194,10 @@
             dig(x - 1, y);
             dig(x + 1, y);
             dig(x, y + 1);
+            dig(x+1, y+1);
+            dig(x+1, y-1);
+            dig(x-1, y+1);
+            dig(x-1, y-1);
         }
     }
 
@@ -208,11 +212,15 @@
             tile.isFlagged = false;
             tile.cssStyle = "notshown"
             flagCount--;
+            if (tile.isBomb){
+                flaggedBombsCount--;
+            }
             return;
         }
         else{
             tile.isFlagged = true;
             tile.cssStyle = "flagged"
+            
             // Check if won everytime a tile is flagged
             if (checkWinCon(tile)){
                 disableButtons();
@@ -234,10 +242,13 @@
 
     function checkWinCon(tile){
         // Check if all flagged tiles are also bombs
-        if (tile.isBomb && tile.isFlagged){
+        if (tile.isFlagged){
+            if (tile.isBomb){
+                flaggedBombsCount++;
+            }
             flagCount++;
         }
-        if (flagCount == bombCount){
+        if (flaggedBombsCount == bombCount && flagCount == bombCount){
             return true;
         }
         return false;
